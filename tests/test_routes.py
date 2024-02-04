@@ -12,7 +12,6 @@ from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
 from service.routes import app
-from flask import Flask, abort,request,jsonify
 from service import talisman
 
 DATABASE_URI = os.getenv(
@@ -25,6 +24,8 @@ HTTPS_ENVIRON = {'wsgi.url_scheme': 'https'}
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
+
+
 class TestAccountService(TestCase):
     """Account Service Tests"""
 
@@ -140,18 +141,16 @@ class TestAccountService(TestCase):
     ######################################################################
     # READ AN ACCOUNT
     ######################################################################
-    
 
     def test_get_account_not_found(self):
         """It should not Read an Account that is not found"""
         resp = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    
-
     ######################################################################
     # LIST ALL ACCOUNTS
     ######################################################################
+
     def test_get_account_list(self):
         """It should Get a list of Accounts"""
         self._create_accounts(5)
@@ -159,11 +158,11 @@ class TestAccountService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)
- 
 
     ######################################################################
     # UPDATE AN EXISTING ACCOUNT
     ######################################################################
+
     def test_update_account(self):
         """It should Update an existing Account"""
         # create an Account to update
@@ -178,10 +177,10 @@ class TestAccountService(TestCase):
         updated_account = resp.get_json()
         self.assertEqual(updated_account["name"], "Something Known")
 
-
     ######################################################################
     # DELETE AN ACCOUNT
     ######################################################################
+
     def test_delete_account(self):
         """It should Delete an Account"""
         account = self._create_accounts(1)[0]
@@ -192,7 +191,7 @@ class TestAccountService(TestCase):
         """It should not allow an illegal method call"""
         resp = self.client.delete(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-    
+
     def test_security_headers(self):
         """It should return security headers"""
         response = self.client.get('/', environ_overrides=HTTPS_ENVIRON)
@@ -211,4 +210,5 @@ class TestAccountService(TestCase):
         response = self.client.get('/', environ_overrides=HTTPS_ENVIRON)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Check for the CORS header
+
         self.assertEqual(response.headers.get('Access-Control-Allow-Origin'), '*')
